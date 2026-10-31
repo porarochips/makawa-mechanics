@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MM Makawa Mechanics | Complete Auto Care</title>
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --accent: #f59e0b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text); line-height: 1.6; }
+    header { background: #020617; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); flex-wrap: wrap; gap: 1rem; }
+    .logo { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
+    nav a { color: var(--text); text-decoration: none; margin-left: 1.5rem; }
+    .hero { padding: 4rem 2rem; text-align: center; background: linear-gradient(rgba(15,23,42,0.8), rgba(15,23,42,0.9)), url('https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80') center/cover; }
+    .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #fff; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem; }
+    .card { background: var(--bg-card); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent); }
+    .btn { background: var(--accent); color: #000; padding: 0.75rem 1.5rem; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; }
+    form label { display: block; margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted); }
+    form input, form select, form textarea { width: 100%; padding: 0.75rem; margin-top: 0.25rem; background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 4px; }
+    #admin-table { width: 100%; border-collapse: collapse; margin-top: 1rem; overflow-x: auto; display: block; }
+    #admin-table th, #admin-table td { padding: 0.75rem; border: 1px solid #334155; text-align: left; font-size: 0.85rem; }
+    #admin-table th { background: #1e293b; color: var(--accent); }
+    .map-container { margin-top: 2rem; border-radius: 8px; overflow: hidden; border: 1px solid #334155; }
+  </style>
+
+  <!-- Load Firebase SDK via Standard Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="logo">⚙️ MM MAKAWA MECHANICS</div>
+    <nav>
+      <a href="#services">Services</a>
+      <a href="#booking">Book Repair</a>
+      <a href="#location">Location</a>
+      <a href="#admin">Admin Logs</a>
+      <a href="tel:+26378598537" class="btn">📞 Emergency Call</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>We Fix Everything On Your Car</h1>
+    <p>Engine Overhauls, Brakes, Auto Electrics, Diagnostics & General Maintenance.</p>
+    <br>
+    <a href="#booking" class="btn">Book Service Now</a>
+  </section>
+
+  <div class="container">
+    <section id="services">
+      <h2 style="color: var(--accent);">Our Workshop Services</h2>
+      <div class="grid">
+        <div class="card"><h3>🔧 Engine & Transmission</h3><p>Complete engine rebuilds, clutch replacements, and gearbox maintenance.</p></div>
+        <div class="card"><h3>⚡ Auto Electrics & Diagnostics</h3><p>ECU scanning, fault code clearing, wiring fixes, and battery testing.</p></div>
+        <div class="card"><h3>🛑 Brakes & Suspension</h3><p>Brake pad replacement, disc skimming, shock absorbers, and steering racks.</p></div>
+      </div>
+    </section>
+
+    <!-- Booking Form Section -->
+    <section id="booking" style="margin-top: 4rem;">
+      <h2 style="color: var(--accent);">Book a Mechanic Service</h2>
+      <form id="serviceForm" action="https://formspree.io/f/mwvwrrzd" method="POST">
+        <label>Your Name</label>
+        <input type="text" id="custName" name="Name" required placeholder="John Doe">
+        
+        <label>Phone Number</label>
+        <input type="tel" id="custPhone" name="Phone" required placeholder="+263 77 123 4567">
+        
+        <label>Car Make & Model</label>
+        <input type="text" id="custCar" name="Car" required placeholder="Nissan Tiida">
+        
+        <label>Service Needed</label>
+        <select id="custService" name="Service">
+          <option>Engine Diagnosis</option>
+          <option>Brake Service</option>
+          <option>Auto Electrical Repair</option>
+          <option>Suspension & Steering</option>
+          <option>Full Maintenance</option>
+        </select>
+        
+        <label>Describe the Issue</label>
+        <textarea id="custNotes" name="Notes" rows="3" placeholder="Engine makes a funny sound..."></textarea>
+        
+        <br><br>
+        <button type="submit" id="submitBtn" class="btn">Submit Booking & Notify Mechanic</button>
+      </form>
+    </section>
+
+    <!-- Location & Map Section -->
+    <section id="location" style="margin-top: 4rem;">
+      <h2 style="color: var(--accent);">Visit Our Workshop</h2>
+      <p style="color: var(--text-muted); margin-top: 0.5rem;">Drop by our workshop for professional diagnostics and repairs.</p>
+      
+      <div class="grid" style="align-items: center;">
+        <div class="card">
+          <h3>📍 Workshop Address</h3>
+          <p style="margin-top: 0.5rem;">MM Makawa Mechanics Workshop<br> 29 Durham Hillcrest, Bulawayo</p>
+          <br>
+          <h3>🕒 Operating Hours</h3>
+          <p style="margin-top: 0.5rem;">Monday – Saturday: 08:00 AM – 17:00 PM<br>Sunday: Closed (Emergencies Only)</p>
+        </div>
+        <div class="map-container">
+          <iframe width="100%" height="250" style="border:0;" loading="lazy" allowfullscreen src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3798.2435168434!2d31.0522!3d-17.8292!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTfCsDA0JzQ1LjIiUyAzMcKwMDMnOC44IkU!5e0!3m2!1sen!2szw!4v1650000000000!5m2!1sen!2szw"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- Owner Dashboard Section -->
+    <section id="admin" style="margin-top: 4rem; padding: 2rem; background: #020617; border-radius: 8px;">
+      <h2 style="color: var(--accent);">Owner Dashboard (Live Database Submissions)</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Real-time form submissions logged into your Firebase Realtime Database.</p>
+      
+      <table id="admin-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Car</th>
+            <th>Service</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="dbRows">
+          <tr><td colspan="6" style="text-align:center;">Loading customer records...</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCqZxNAmoFtdVgs3S8HHsCWb309PDUgJTA",
+      authDomain: "makawa-mechanics.firebaseapp.com",
+      databaseURL: "https://makawa-mechanics-default-rtdb.firebaseio.com",
+      projectId: "makawa-mechanics",
+      storageBucket: "makawa-mechanics.firebasestorage.app",
+      messagingSenderId: "384061446589",
+      appId: "1:384061446589:web:431b860f3def9e4931dad4"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 1. Listen & display records from Firebase Realtime Database in real time
+    db.ref('bookings').on('value', (snapshot) => {
+      const dbRows = document.getElementById('dbRows');
+      dbRows.innerHTML = "";
+      const data = snapshot.val();
+      
+      if (data) {
+        Object.values(data).reverse().forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${item.timestamp}</td>
+            <td><strong>${item.name || ''}</strong></td>
+            <td>${item.phone || ''}</td>
+            <td>${item.car || ''}</td>
+            <td>${item.service || ''}</td>
+            <td>${item.notes || ''}</td>
+          `;
+          dbRows.appendChild(tr);
+        });
+      } else {
+        dbRows.innerHTML = '<tr><td colspan="6" style="text-align:center;">No bookings found in database yet.</td></tr>';
+      }
+    }, (error) => {
+      document.getElementById('dbRows').innerHTML = `<tr><td colspan="6" style="text-align:center; color:#ef4444;">Database read error: ${error.message}</td></tr>`;
+    });
+
+    // 2. Save data to Firebase when user submits, then pass submission to Formspree
+    const form = document.getElementById('serviceForm');
+    form.addEventListener('submit', function(e) {
+      const bookingData = {
+        name: document.getElementById('custName').value,
+        phone: document.getElementById('custPhone').value,
+        car: document.getElementById('custCar').value,
+        service: document.getElementById('custService').value,
+        notes: document.getElementById('custNotes').value,
+        timestamp: new Date().toLocaleString()
+      };
+
+      // Push copy to Firebase Database asynchronously
+      db.ref('bookings').push(bookingData);
+    });
+  </script>
+</body>
+</html>
